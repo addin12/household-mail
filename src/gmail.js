@@ -1,6 +1,8 @@
 // Gmail over its REST API, read-only (scope gmail.readonly). One refresh token per account lives in a Worker secret.
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
+const ID = /^[0-9a-f]{8,32}$/i;
+const checked = (id) => { if (!ID.test(String(id))) throw new Error('bad message id'); return id; }; // the tool layer checks too; this layer must not rely on its callers
 const API = 'https://gmail.googleapis.com/gmail/v1/users/me';
 const MAX_BODY = 200000; // characters of a mail body handed back
 
@@ -79,7 +81,7 @@ export function bodyOf(payload) {
 }
 
 export async function read(env, who, id, opts) {
-  const m = await api(env, who, `/messages/${id}?format=full`, opts);
+  const m = await api(env, who, `/messages/${checked(id)}?format=full`, opts);
   return [{ id: m.id, threadId: m.threadId, from: header(m, 'From'), to: header(m, 'To'), subject: header(m, 'Subject'), date: dateOf(m), body: bodyOf(m.payload) }];
 }
 
@@ -138,7 +140,7 @@ export function findBody(payload) {
 
 /** One message in the shape the Cashflow parsers take: { id, from, subject, epochMs, body, isHtml }. */
 export async function fetchMessage(env, who, id, opts) {
-  const m = await api(env, who, `/messages/${id}?format=full`, opts);
+  const m = await api(env, who, `/messages/${checked(id)}?format=full`, opts);
   const { body, isHtml } = findBody(m.payload);
   return { id: m.id, from: header(m, 'From'), subject: header(m, 'Subject'), epochMs: Number(m.internalDate), body, isHtml };
 }
