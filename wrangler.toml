@@ -1,0 +1,8 @@
+name = "household-mail"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# Secrets (never in this file): wrangler secret put <NAME>
+#   MCP_TOKEN                       the bearer token Claude Code sends
+#   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET   the Google Cloud OAuth client (gmail.readonly)
+#   REFRESH_ADDIN, REFRESH_MUTHIA1, REFRESH_MUTHIA2   one refresh token per Gmail account
